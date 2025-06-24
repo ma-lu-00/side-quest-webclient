@@ -1,38 +1,309 @@
-.App {
-  text-align: center;
+:root {
+  --dark-color: #1F1F1F;
+  --light-color: #E3E3E3;
+  --background-color: #121212;
+  --completed-color: rgb(26, 149, 26);
+  --popup-background: rgba(0, 0, 0, 0.5);
+  --item-hover-color: #464646;
+  --divider-color: rgb(167, 167, 167);
+
+  --quest-list-gap: 7px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.font-base {
+  color: var(--light-color);
+  font-size: 14px;
+  font-family: 'Roboto Mono';
+  font-weight: 400;
+  word-wrap: break-word;
+  display: block;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.font-heading-1 {
+  color: var(--light-color);
+  font-size: 36px;
+  font-family: 'Roboto Mono';
+  font-weight: 400;
+  word-wrap: break-word;
+}
+
+.font-heading-2 {
+  color: var(--light-color);
+  font-size: 24px;
+  font-family: 'Roboto Mono';
+  font-weight: 400;
+  word-wrap: break-word;
+}
+
+.font-heading-3 {
+  color: var(--light-color);
+  font-size: 20px;
+  font-family: 'Roboto Mono';
+  font-weight: 400;
+  word-wrap: break-word;
+}
+
+.material-symbols-rounded {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  color: var(--light-color);
+  user-select: none;
+}
+
+.listing-vertical {
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  display: flex;
+}
+
+.listing-vertical-stretch {
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 30px;
+  display: flex;
+  width: 100%;
+}
+
+.app-container {
+  height: 100vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex: 1 0 0;
+  align-self: stretch;
+}
+
+.center-elem {
+  width: 100%;
+  height: calc(100% - 20px*2);
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background: var(--background-color);
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 20px;
+  display: inline-flex;
+}
+
+.sidebar {
+  padding: 20px;
+  height: calc(100% - 20px*2);
+  width: 400px;
+  background: var(--dark-color);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.sidebar-option {
+  padding-left: 4px;
+  justify-content: flex-start;
   align-items: center;
+  gap: 20px;
+  display: inline-flex;
+}
+
+.divider {
+  width: 260px;
+  height: 1px;
+  left: 0;
+  top: 0;
+  position: relative;
+  background: var(--divider-color);
+  border-radius: 10px;
+  align-self: stretch;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.labled-text-field {
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 5px;
+  display: flex;
+}
+
+.text-field {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  background: var(--background-color);
+  border-radius: 10px;
+  box-sizing: border-box;
+
+  & .input {
+    background-color: transparent;
+    border-color: transparent;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    resize: both;
+  }
+
+  & .font-base {
+    width: 100%;
+  }
+}
+
+.text-button {
+  flex: 1 1 0;
+  padding: 9px;
+  overflow: hidden;
+  border-radius: 10px;
+  outline: 2px var(--light-color) solid;
+  outline-offset: -2px;
+  flex-direction: column;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
+  display: flex;
+
+  &:hover {
+    background-color: var(--light-color);
+    transform: scale(1.05);
+  }
+
+  &:hover .font-base {
+    color: var(--dark-color);
+  }
 }
 
-.App-link {
-  color: #61dafb;
+.button-icon-text-outline {
+  width: 260px;
+  padding-left: 13px;
+  padding-right: 13px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow: hidden;
+  border-radius: 10px;
+  outline: 2px var(--light-color) solid;
+  outline-offset: -2px;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  display: inline-flex;
+  box-sizing: border-box;
+  width: 100%;
+
+  &:hover {
+    background-color: var(--light-color);
+    transform: scale(1.05);
+  }
+
+  &:hover .material-symbols-rounded,
+  &:hover .font-base {
+    color: var(--dark-color)
+  }
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.button-icon-text-fill {
+  width: 260px;
+  padding-left: 13px;
+  padding-right: 13px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow: hidden;
+  border-radius: 10px;
+  background-color: var(--light-color);
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  display: inline-flex;
+  box-sizing: border-box;
+  width: 100%;
+
+  &:hover {
+    background-color: rgb(158, 158, 158);
+    transform: scale(1.05);
   }
-  to {
-    transform: rotate(360deg);
+
+  & .material-symbols-rounded,
+  & .font-base {
+    color: var(--dark-color);
   }
+}
+
+.quest-list {
+  overflow-y: auto;
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: var(--quest-list-gap);
+  display: flex;
+}
+
+.quest-item {
+  display: flex;
+  padding: 5px 10px;
+  align-items: center;
+  gap: 15px;
+  flex: 1 0 0;
+  border-radius: 10px;
+  background: var(--dark-color);
+  width: 100%;
+  box-sizing: border-box;
+
+  & .font-base {
+    color: var(--light-color)
+  }
+
+  &:hover {
+    background-color: var(--item-hover-color);
+  }
+
+  &:selected {
+    background-color: var(--light-color);
+    color: var(--dark-color)
+  }
+}
+
+.popup-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--popup-background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background-color: var(--dark-color);
+  width: 600px;
+  border-radius: 30px;
+  padding:30px;
+  gap: 15px;
+  text-align: center;
+  position: relative;
 }
