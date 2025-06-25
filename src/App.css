@@ -285,6 +285,11 @@ body,
   }
 }
 
+.done-quest-item {
+  background-color: red;
+  color: rgb(118, 118, 118);
+}
+
 .popup-background {
   position: fixed;
   top: 0;
@@ -302,7 +307,7 @@ body,
   background-color: var(--dark-color);
   width: 600px;
   border-radius: 30px;
-  padding:30px;
+  padding: 30px;
   gap: 15px;
   text-align: center;
   position: relative;

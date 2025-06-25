@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
 
-export const QuestItem = ({ title, status = 'initial', is_selected = false, onClick, children, parent_quest, id_ }) => {
+export const QuestItem = ({ title = "NoTitle", status = 'initial', parent_quest, description = "NoDesc", id_, is_selected = false, onClick, children }) => {
     const has_children = children ? true : false;
     const indent_witdh = 46;
 
@@ -33,6 +33,37 @@ export const QuestItem = ({ title, status = 'initial', is_selected = false, onCl
                     {children}
                 </div>)
             }
+        </div>
+    )
+}
+
+export const NewQuestPopup = ({ isOpen, onClose }) => {
+    if (!isOpen) return null;
+    return (
+        <div className="popup-background" onClick={onClose}>
+            <div className="listing-vertical popup-content" onClick={(e) => e.stopPropagation()}>
+                <div className='font-heading-2' style={{ textAlign: 'left' }}>New Quest</div>
+                <div className='labled-text-field'>
+                    <BasicLable text="Title" id_="DescriptionInput" />
+                    <BasicTextField id_="NewQPopTitleIn" />
+                </div>
+                <div className='labled-text-field'>
+                    <BasicLable text="Description" id_="DescriptionInput" />
+                    <LongTextField id_="NewQPopDescIn" />
+                </div>
+                <div className='labled-text-field'>
+                    <BasicLable text="Owner" id_="DescriptionInput" />
+                    <BasicTextField id_="NewQPopOwnerIn" />
+                </div>
+                <div className='labled-text-field'>
+                    <BasicLable text="Editor" id_="DescriptionInput" />
+                    <BasicTextField id_="NewQPopEditorIn" />
+                </div>
+                <div style={{ paddingTop: 30, alignSelf: 'stretch', justifyContent: 'flex-start', alignItems: 'center', gap: 20, display: 'inline-flex' }}>
+                    <BasicTextButton text="Cancel" id_="NewQPopCancelBtn" />
+                    <BasicTextButton text="Create" id_="NewQPopCreatelBtn" />
+                </div>
+            </div>
         </div>
     )
 }
@@ -128,33 +159,3 @@ export const SimpleDivider = () => {
     )
 }
 
-export const NewQuestPopup = ({ isOpen, onClose }) => {
-    if (!isOpen) return null;
-    return (
-        <div className="popup-background" onClick={onClose}>
-            <div className="listing-vertical popup-content" onClick={(e) => e.stopPropagation()}>
-                <div className='font-heading-2' style={{ textAlign: 'left' }}>New Quest</div>
-                <div className='labled-text-field'>
-                    <BasicLable text="Title" id_="DescriptionInput" />
-                    <BasicTextField id_="NewQPopTitleIn" />
-                </div>
-                <div className='labled-text-field'>
-                    <BasicLable text="Description" id_="DescriptionInput" />
-                    <LongTextField id_="NewQPopDescIn" />
-                </div>
-                <div className='labled-text-field'>
-                    <BasicLable text="Owner" id_="DescriptionInput" />
-                    <BasicTextField id_="NewQPopOwnerIn" />
-                </div>
-                <div className='labled-text-field'>
-                    <BasicLable text="Editor" id_="DescriptionInput" />
-                    <BasicTextField id_="NewQPopEditorIn" />
-                </div>
-                <div style={{ paddingTop: 30, alignSelf: 'stretch', justifyContent: 'flex-start', alignItems: 'center', gap: 20, display: 'inline-flex' }}>
-                    <BasicTextButton text="Cancel" id_="NewQPopCancelBtn" />
-                    <BasicTextButton text="Create" id_="NewQPopCreatelBtn" />
-                </div>
-            </div>
-        </div>
-    );
-};
