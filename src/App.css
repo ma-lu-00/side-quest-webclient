@@ -262,6 +262,7 @@ body,
 
 .quest-item {
   display: flex;
+  flex-direction: row;
   padding: 5px 10px;
   align-items: center;
   gap: 15px;
@@ -269,7 +270,7 @@ body,
   border-radius: 10px;
   background: var(--dark-color);
   width: 100%;
-  box-sizing: border-box;
+  
 
   & .font-base {
     color: var(--light-color)

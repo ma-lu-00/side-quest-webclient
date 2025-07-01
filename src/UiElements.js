@@ -1,35 +1,35 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './App.css';
+import { Quest, Status } from './classes/Quest.js'
+import * as Net from './classes/network.js'
 
-export const QuestItem = ({ title = "NoTitle", status = 'initial', parent_quest, description = "NoDesc", id_, is_selected = false, onClick, children }) => {
-    const has_children = children ? true : false;
+export const QuestItem = ({ quest, is_selected = false, onClick, children }) => {
     const indent_witdh = 46;
 
     const [isExpanded, setIsExpanded] = useState(false);
     const toggleChildren = () => {
-        console.log(`toggle: ${isExpanded}`);
         setIsExpanded(prev => !prev);
     };
 
     return (
         <div className='quest-list'>
             <div style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', gap: 0, display: 'flex', boxSizing: 'border-box' }}
-                {...(id_ ? { id: id_ } : {})}>
-                {parent_quest && <MaterialIcon icon='subdirectory_arrow_right' style={{ paddingLeft: `${(parent_quest && indent_witdh / 2)}px`, }} />}
+                {...(quest.id ? { id: quest.id } : {})}>
+                {quest.hasParent() && <MaterialIcon icon='subdirectory_arrow_right' style={{ paddingLeft: `${(quest.hasParent() && indent_witdh / 2)}px`, }} />}
                 <div className='quest-item' style={{ background: is_selected === true && 'var(--light-color)' }} onClick={onClick} >
-                    {has_children && <div id="icon_btn" onClick={toggleChildren}>
+                    {quest.hasSubquests() && <div id="icon_btn" onClick={toggleChildren} style={{ display: 'flex', alignContent: 'center' }}>
                         <MaterialIcon icon={'arrow_drop_down'} style={{ color: is_selected === true && 'var(--dark-color)' }} />
                     </div>}
                     <div style={{ justifyContent: 'flex-start', alignItems: 'center', gap: 10, display: 'flex' }}>
                         <MaterialIcon
-                            icon={status === 'initial' ? "circle" : (status === 'done' ? "check_circle" : "block")}
-                            style={{ color: status == 'done' ? 'var(--completed-color)' : (is_selected === true && 'var(--dark-color)') }} />
-                        <div className='font-base' style={{ color: is_selected === true && 'var(--dark-color)' }}>{title}</div>
+                            icon={quest.status === Status.INITIAL ? "circle" : (quest.status === Status.DONE ? "check_circle" : "block")}
+                            style={{ color: quest.status === Status.DONE ? 'var(--completed-color)' : (is_selected == true && 'var(--dark-color)') }} />
+                        <div className='font-base' style={{ color: is_selected == true && 'var(--dark-color)' }}>{quest.title}</div>
                     </div>
                 </div>
             </div>
-            {has_children && isExpanded && (
-                <div className='quest-list' style={{ paddingLeft: `${(parent_quest && indent_witdh - 5)}px`, }} >
+            {quest.hasSubquests() && isExpanded && (
+                <div className='quest-list' style={{ paddingLeft: `${(quest.hasParent() && indent_witdh - 5)}px`, }} >
                     {children}
                 </div>)
             }
@@ -37,36 +37,54 @@ export const QuestItem = ({ title = "NoTitle", status = 'initial', parent_quest,
     )
 }
 
-export const NewQuestPopup = ({ isOpen, onClose }) => {
+export const NewQuestPopup = ({ isOpen, onClose, createNew }) => {
+    const [title, setTitle] = useState('');
+    const [desc, setDesc] = useState('');
+    const [owner, setOwner] = useState('');
+    const [editor, setEditor] = useState('');
+
+    
+    const handleChange = (setter) => (event) => {
+        setter(event.target.value);
+    };
+    
+    const handleCreate = () => {
+        if (createNew(new Quest(0, title, desc, Status.INITIAL, null, Number(owner), Number(editor))))
+            onClose();
+        else {
+            alert("invalid input")
+        }
+    };
+    
     if (!isOpen) return null;
     return (
         <div className="popup-background" onClick={onClose}>
             <div className="listing-vertical popup-content" onClick={(e) => e.stopPropagation()}>
-                <div className='font-heading-2' style={{ textAlign: 'left' }}>New Quest</div>
-                <div className='labled-text-field'>
+                <div className="font-heading-2" style={{ textAlign: 'left' }}>New Quest</div>
+                <div className="labled-text-field">
                     <BasicLable text="Title" id_="DescriptionInput" />
-                    <BasicTextField id_="NewQPopTitleIn" />
+                    <BasicTextField id_="NewQPopTitleIn" text={title} onChange={(_, value) => setTitle(value)} />
                 </div>
-                <div className='labled-text-field'>
+                <div className="labled-text-field">
                     <BasicLable text="Description" id_="DescriptionInput" />
-                    <LongTextField id_="NewQPopDescIn" />
+                    <LongTextField id_="NewQPopDescIn" text={desc} onChange={(_, value) => setDesc(value)} />
                 </div>
-                <div className='labled-text-field'>
+                <div className="labled-text-field">
                     <BasicLable text="Owner" id_="DescriptionInput" />
-                    <BasicTextField id_="NewQPopOwnerIn" />
+                    <BasicTextField id_="NewQPopOwnerIn" text={owner} onChange={(_, value) => setOwner(value)} />
                 </div>
-                <div className='labled-text-field'>
+                <div className="labled-text-field">
                     <BasicLable text="Editor" id_="DescriptionInput" />
-                    <BasicTextField id_="NewQPopEditorIn" />
+                    <BasicTextField id_="NewQPopEditorIn" text={editor} onChange={(_, value) => setEditor(value)} />
                 </div>
                 <div style={{ paddingTop: 30, alignSelf: 'stretch', justifyContent: 'flex-start', alignItems: 'center', gap: 20, display: 'inline-flex' }}>
-                    <BasicTextButton text="Cancel" id_="NewQPopCancelBtn" />
-                    <BasicTextButton text="Create" id_="NewQPopCreatelBtn" />
+                    <BasicTextButton text="Cancel" id_="NewQPopCancelBtn" onClick={onClose} />
+                    <BasicTextButton text="Create" id_="NewQPopCreatelBtn" onClick={handleCreate} />
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export const SidebarOption = ({ text, icon = 'add', id_, onClick }) => {
     return (
@@ -77,16 +95,25 @@ export const SidebarOption = ({ text, icon = 'add', id_, onClick }) => {
     )
 }
 
-export const BasicTextField = ({ text, font_size = 14, padding_hor = 10, padding_vert = 10, id_ }) => {
+export const BasicTextField = ({ text, font_size = 14, padding_hor = 10, padding_vert = 10, id_, onChange }) => {
+    const [content, setContent] = useState(text);
+
+    const handleChange = (event) => {
+        const newValue = event.target.value;
+        setContent(newValue);
+        onChange?.(id_, newValue);
+    };
+
     return (
         <div className="text-field" style={{ paddingLeft: padding_hor, paddingRight: padding_hor, paddingTop: padding_vert, paddingBottom: padding_vert }}>
-            <input type="text" className="font-base input" defaultValue={text} aria-multiline={true} style={{ fontSize: font_size }} {...(id_ ? { id: id_ } : {})} />
+            <input type="text" className="font-base input" value={content} style={{ fontSize: font_size }} {...(id_ ? { id: id_ } : {})} onChange={handleChange} />
         </div>
-    )
-}
+    );
+};
 
-export const LongTextField = ({ text, font_size = 14, padding_hor = 10, padding_vert = 10, id_ }) => {
+export const LongTextField = ({ text, font_size = 14, padding_hor = 10, padding_vert = 10, id_, onChange }) => {
     const textareaRef = useRef(null);
+    const [content, setContent] = useState(text);
 
     const adjustHeight = () => {
         const textarea = textareaRef.current;
@@ -96,24 +123,21 @@ export const LongTextField = ({ text, font_size = 14, padding_hor = 10, padding_
         }
     };
 
-    useEffect(() => {
+    const inputChanged = (event) => {
+        const newValue = event.target.value;
+        setContent(newValue);
         adjustHeight();
-    }, [text]);
+        onChange?.(id_, newValue);
+    };
 
     return (
         <div className="text-field" style={{ paddingLeft: padding_hor, paddingRight: padding_hor, paddingTop: padding_vert, paddingBottom: padding_vert, }} >
-            <textarea ref={textareaRef} className="font-base input"  onInput={adjustHeight}
-                style={{ fontSize: font_size, width: '100%', resize: 'none', overflow: 'hidden', minHeight: '40px', }}
-                {...(id_ ? { id: id_ } : {})}
-            >{text}</textarea>
+            <textarea ref={textareaRef} className="font-base input" onChange={inputChanged} defaultValue={text}
+                style={{ fontSize: font_size, width: '100%', resize: 'none', overflow: 'hidden', minHeight: '40px', }} {...(id_ ? { id: id_ } : {})}
+            />
         </div>
     );
 };
-
-function auto_height(elem) {
-    elem.style.height = '1px';
-    elem.style.height = `${elem.scrollHeight}px`;
-}
 
 export const BasicLable = ({ text }) => {
     return (
