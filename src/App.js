@@ -33,21 +33,27 @@ function App() {
     setSelectedQuest(findQuestById(quests, selectedId));
   }, [quests, selectedId]);
 
+  useEffect(() => {
+    if (selectedQuest && !selectedQuest.hasSubquests())
+      readByParent(selectedId);
+    console.log("allQuests:", quests);
+  }, [selectedQuest])
+
   const addNewQuest = (newQuest) => {
     setQuests((prevQuests) => [...prevQuests, newQuest]);
   };
 
   const updateQuestInTree = (quests, updatedQuest) => {
-  return quests.map((quest) => {
-    if (quest.id === updatedQuest.id)
-      return updatedQuest;
-    if (quest.children && quest.children.length > 0) {
-      const updatedChildren = updateQuestInTree(quest.children, updatedQuest);
-      return { ...quest, children: updatedChildren };
-    }
-    return quest;
-  });
-};
+    return quests.map((quest) => {
+      if (quest.id === updatedQuest.id)
+        return updatedQuest;
+      if (quest.children && quest.children.length > 0) {
+        const updatedChildren = updateQuestInTree(quest.children, updatedQuest);
+        return { ...quest, children: updatedChildren };
+      }
+      return quest;
+    });
+  };
 
   const resetSelectedQuest = () => {
     setResetFlag((prev) => !prev);
@@ -92,9 +98,12 @@ function App() {
 
   const readByParent = async (id) => {
     const data = await Net.readByParent(id);
-    let parentQuest = findQuestById(quests, id);
-    if (!parentQuest.hasSubquests())
-      data.forEach(subQuest => parentQuest.addSubquest(subQuest));
+    if (data === null) return;
+    const parentQuest = findQuestById(quests, id);
+    if (data && Array.isArray(data) )
+      data.forEach(subQuest => parentQuest.addSubquest(Quest.fromJSON(subQuest, quests)))
+
+    setQuests((prevQuests) => updateQuestInTree(prevQuests, parentQuest));
   }
 
   const createNewQuest = async (quest) => {
@@ -105,16 +114,17 @@ function App() {
     let parsedQuest = Quest.fromJSON(data, quests);
     if (!parsedQuest.hasParent())
       addNewQuest(parsedQuest);
-    setQuests((prevQuests) => prevQuests.filter((quest) => quest.id !== selectedId));
+    else {
+      const parent = findQuestById(quests, parsedQuest.parentId);
+      parent.addSubquest(parsedQuest);
+    }
+    setQuests((prevQuests) => updateQuestInTree(prevQuests, parsedQuest));
   }
 
   const updateQuest = async (quest) => {
-    const updateId = quest.id;
     const data = await Net.updateQuest(quest);
     let parsedQuest = Quest.fromJSON(data, quests);
     console.log("paresedQuest", parsedQuest);
-    setQuests((prevQuests) => updateQuestInTree(prevQuests, parsedQuest));
-    console.log(quests);
   }
 
   const deleteQuest = async (id) => {
@@ -142,7 +152,7 @@ function App() {
             <UiE.SimpleDivider />
             <UiE.BasicLable text="Recents" />
             <div className="listing-vertical-stretch" style={{ gap: 10 }}>
-              <UiE.IconTextButtonOutline text="QuestType" id_="QuestTypeBtn1" onClick={NotImpl} />
+              <UiE.IconTextButtonOutline text="QuestType" id_="QuestTypeBtn1" onClick={NotImpl} /> 
               <UiE.IconTextButtonOutline text="QuestType" id_="QuestTypeBtn2" onClick={NotImpl} />
             </div>
             <UiE.SimpleDivider />
@@ -230,8 +240,8 @@ export function findQuestById(quests, id) {
   for (const quest of quests) {
     if (quest.id === id)
       return quest;
-    if (quest.children) {
-      const foundQuest = findQuestById(quest.children, id);
+    if (quest.hasSubquests()) {
+      const foundQuest = findQuestById(quest.subquests, id);
       if (foundQuest)
         return foundQuest;
     }

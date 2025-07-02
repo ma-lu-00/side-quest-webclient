@@ -10,6 +10,7 @@ export const createNewQuest = async (quest) => {
             headers: {
                 'Content-Type': 'application/json',
             },
+            mode: 'cors',
             body: quest.toJSON(),
         });
 
@@ -28,7 +29,8 @@ export const readQuest = async (id) => {
     const url = `${baseURL}/quests/${id}`;
     try {
         const response = await fetch(url, {
-            method: 'GET'
+            method: 'GET',
+            mode: 'cors',
         });
 
         if (!response.ok)
@@ -50,6 +52,7 @@ export const updateQuest = async (quest) => {
             headers: {
                 'Content-Type': 'application/json',
             },
+            mode: 'cors',
             body: quest.toJSON(),
         });
 
@@ -68,7 +71,8 @@ export const deleteQuest = async (id) => {
     const url = `${baseURL}/quests/${id}`;
     try {
         const response = await fetch(url, {
-            method: 'DELETE'
+            method: 'DELETE',
+            mode: 'cors',
         });
 
         if (response.status != 204)
@@ -86,7 +90,8 @@ export const readByOwner = async (id) => {
     const url = `${baseURL}/users/${id}/quests`;
     try {
         const response = await fetch(url, {
-            method: 'GET'
+            method: 'GET',
+            mode: 'cors',
         })
 
         if (!response.ok)
@@ -104,7 +109,8 @@ export const readByParent = async (id) => {
     const url = `${baseURL}/quests/${id}/subquests`;
     try {
         const response = await fetch(url, {
-            method: 'GET'
+            method: 'GET',
+            mode: 'cors',
         });
 
         if (!response.ok)
@@ -115,5 +121,6 @@ export const readByParent = async (id) => {
         return data;
     } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
+        return null;
     }
 }
